@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Typing Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background: #f4f4f4;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #word {
+      font-size: 2em;
+      margin: 20px;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    /* Hover effect on the word */
+    #word:hover {
+      transform: scale(1.2);
+      color: #3498db;
+    }
+
+    #input {
+      font-size: 1.2em;
+      padding: 8px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
+
+    #input:focus {
+      border-color: #3498db;
+    }
+
+    /* Wrong word effect only on input */
+    #input.wrong {
+      border-color: red;
+      background-color: #ffe5e5;
+    }
+
+    #score, #time {
+      font-size: 1.2em;
+      margin: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background: #2ecc71;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background: #27ae60;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Typing Game</h1>
+  <div id="word"></div>
+  <input type="text" id="input" placeholder="Type the word here" autofocus />
+  <div id="score">Score: 0</div>
+  <div id="time">Time: 30</div>
+  <button id="restart">Restart Game</button>
+
+  <script>
+    const words = ["javascript", "coding", "game", "keyboard", "speed", "challenge", "practice", "developer"];
+    let score = 0;
+    let time = 30;
+    let currentWord = "";
+    let timer;
+
+    const wordEl = document.getElementById("word");
+    const inputEl = document.getElementById("input");
+    const scoreEl = document.getElementById("score");
+    const timeEl = document.getElementById("time");
+    const restartBtn = document.getElementById("restart");
+
+    function randomWord() {
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function displayWord() {
+      currentWord = randomWord();
+      wordEl.textContent = currentWord;
+    }
+
+    function updateScore() {
+      score++;
+      scoreEl.textContent = "Score: " + score;
+    }
+
+    function updateTime() {
+      time--;
+      timeEl.textContent = "Time: " + time;
+      if (time === 0) {
+        clearInterval(timer);
+        wordEl.textContent = "Game Over!";
+        inputEl.disabled = true;
+      }
+    }
+
+    inputEl.addEventListener("input", () => {
+      if (currentWord.startsWith(inputEl.value)) {
+        // Correct so far → remove red effect
+        inputEl.classList.remove("wrong");
+      } else {
+        // Wrong typing → add red effect
+        inputEl.classList.add("wrong");
+      }
+
+      if (inputEl.value === currentWord) {
+        updateScore();
+        displayWord();
+        inputEl.value = "";
+        inputEl.classList.remove("wrong");
+        time += 2; // bonus time for correct word
+      }
+    });
+
+    restartBtn.addEventListener("click", () => {
+      score = 0;
+      time = 30;
+      scoreEl.textContent = "Score: 0";
+      timeEl.textContent = "Time: 30";
+      inputEl.disabled = false;
+      inputEl.value = "";
+      inputEl.classList.remove("wrong");
+      displayWord();
+      clearInterval(timer);
+      timer = setInterval(updateTime, 1000);
+    });
+
+    // Start game
+    displayWord();
+    timer = setInterval(updateTime, 1000);
+  </script>
+</body>
+</html>
